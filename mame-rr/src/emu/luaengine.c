@@ -13,6 +13,11 @@ using std::max;
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#ifndef _MAX_PATH
+#define _MAX_PATH 1024
+#endif
+#define _getcwd getcwd
+#define _chdir chdir
 #endif
 
 extern "C" {
@@ -2577,8 +2582,8 @@ static int doPopup(lua_State *L, const char* deftype, const char* deficon) {
 
 	int itype = -1, iters = 0;
 	int iicon = -1;
-	static const char * const titles [] = {"Notice", "Question", "Warning", "Error"};
-	const char* answer = "ok";
+	//static const char * const titles [] = {"Notice", "Question", "Warning", "Error"};
+	//const char* answer = "ok";
 
 	while(itype == -1 && iters++ < 2)
 	{
@@ -2631,17 +2636,17 @@ static int doPopup(lua_State *L, const char* deftype, const char* deficon) {
 
 	// Before doing any work, verify the correctness of the parameters.
 	if (strcmp(type, "ok") == 0)
-		t = "OK:100";
+		t = (char*)"OK:100";
 	else if (strcmp(type, "yesno") == 0)
-		t = "Yes:100,No:101";
+		t = (char*)"Yes:100,No:101";
 	else if (strcmp(type, "yesnocancel") == 0)
-		t = "Yes:100,No:101,Cancel:102";
+		t = (char*)"Yes:100,No:101,Cancel:102";
 	else
 		return luaL_error(L, "invalid popup type \"%s\"", type);
 
 	// Can we find a copy of xmessage? Search the path.
 	
-	char *path = strdup(getenv("PATH"));
+	char *path = core_strdup(getenv("PATH"));
 
 	char *current = path;
 	
@@ -2682,7 +2687,7 @@ static int doPopup(lua_State *L, const char* deftype, const char* deficon) {
 	
 		// I'm gonna be dead in a matter of microseconds anyways, so wasted memory doesn't matter to me.
 		// Go ahead and abuse strdup.
-		char * parameters[] = {"xmessage", "-buttons", t, strdup(str), NULL};
+		char * parameters[] = {(char*)"xmessage", (char*)"-buttons", t, core_strdup(str), NULL};
 
 		execvp("xmessage", parameters);
 		
@@ -2733,11 +2738,11 @@ use_console:
 	// All else has failed
 
 	if (strcmp(type, "ok") == 0)
-		t = "";
+		t = (char*)"";
 	else if (strcmp(type, "yesno") == 0)
-		t = "yn";
+		t =(char*) "yn";
 	else if (strcmp(type, "yesnocancel") == 0)
-		t = "ync";
+		t =(char*) "ync";
 	else
 		return luaL_error(L, "invalid popup type \"%s\"", type);
 
@@ -3637,10 +3642,12 @@ void MAME_LuaStop() {
 }
 
 void MAME_OpenLuaConsole() {
+#ifndef __linux    
 	if(!LuaConsoleHWnd)
 		LuaConsoleHWnd = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_LUA), NULL, (DLGPROC) DlgLuaScriptDialog);
 	else
 		SetForegroundWindow(LuaConsoleHWnd);
+#endif    
 }
 
 

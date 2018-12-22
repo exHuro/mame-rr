@@ -13,8 +13,14 @@
 //============================================================
 //  INLINE FUNCTIONS
 //============================================================
+INLINE void ATTR_FORCE_INLINE
+osd_yield_processor(void)
+{
+	__asm__ __volatile__ ( " rep ; nop ;" );
+}
 
-#if defined(__i386__) || defined(__x86_64__)
+
+#if defined(__i386__) || defined(__x86_64__) || defined(ARM_ENABLED)
 
 
 INLINE void ATTR_FORCE_INLINE

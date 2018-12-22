@@ -472,13 +472,13 @@ endif
 
 # add a basic set of warnings
 CCOMFLAGS += \
-	-Wall \
-	-Wcast-align \
 	-Wundef \
-	-Wformat-security \
-	-Wwrite-strings \
 	-Wno-sign-compare \
-	-Wno-conversion
+	-Wno-conversion 
+	#-Wwrite-strings \
+	#-Wformat-security \
+	#-Wall \
+	#-Wcast-align \
 
 # warnings only applicable to C compiles
 CONLYFLAGS += \
@@ -507,6 +507,7 @@ INCPATH += \
 	-I$(SRC)/lib \
 	-I$(SRC)/osd \
 	-I$(SRC)/osd/$(OSD) \
+	-I/usr/include/lua5.1
 
 
 
@@ -615,6 +616,22 @@ LIBS += -lz
 ZLIB =
 endif
 
+ifeq ($(TARGETOS),unix)
+#it has only been tested with lua5.1 but should work with other versions too
+ifndef LUA_VERSION
+LUA_VERSION=lua5.1
+endif
+ifndef LUA_SRC_DIR
+LUA_SRC_DIR=/home/pi/src/lua-5.1.5
+$(error LUA_SRC_DIR is not defined. Please make it point to your LUA source directory)
+endif
+CCOMFLAGS += -I$(LUA_SRC_DIR)/src
+LIBS += -l$(LUA_VERSION)
+#on Linux, this one helps
+#CCOMFLAGS +=  -Wno-write-strings
+endif
+
+LIBS += -pthread
 # add SoftFloat floating point emulation library
 SOFTFLOAT = $(OBJ)/libsoftfloat.a
 
@@ -791,8 +808,6 @@ $(OBJ)/%.o: $(SRC)/%.m | $(OSPREBUILD)
 	@echo Objective-C compiling $<...
 	$(CC) $(CDEFS) $(COBJFLAGS) $(CCOMFLAGS) -c $< -o $@
 endif
-
-
 
 #-------------------------------------------------
 # optional dependencies file

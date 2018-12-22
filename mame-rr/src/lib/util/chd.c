@@ -1321,7 +1321,7 @@ chd_error chd_clone_metadata(chd_file *source, chd_file *dest)
 {
 	UINT32 metatag, metasize, metaindex;
 	UINT8 metabuffer[1024];
-	UINT8 metaflags;
+	UINT8 metaflags = 0;
 	chd_error err;
 
 	/* clone the metadata */

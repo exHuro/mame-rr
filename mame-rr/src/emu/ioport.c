@@ -113,6 +113,10 @@
     CONSTANTS
 ***************************************************************************/
 
+#ifndef _MAX_PATH
+#define _MAX_PATH 1024
+#endif
+
 #define DIGITAL_JOYSTICKS_PER_PLAYER	3
 
 /* these constants must match the order of the joystick directions in the IPT definition */

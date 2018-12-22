@@ -79,7 +79,8 @@
 #define UNEXPECTED(exp)			__builtin_expect(!!(exp), 0)
 #define EXPECTED(exp)			__builtin_expect(!!(exp), 1)
 #define RESTRICT				__restrict__
-#define SETJMP_GNUC_PROTECT()	(void)__builtin_return_address(1)
+//#define SETJMP_GNUC_PROTECT()	(void)__builtin_return_address(1)
+#define SETJMP_GNUC_PROTECT()	do {} while (0)
 #else
 #define ATTR_UNUSED
 #define ATTR_NORETURN
